@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "start:dev": "webpack-dev-server",
+    "prepublish": "npm run lib:build",
     "lib:build": "webpack --config=webpack.config.lib.js",
     "test": "jest --watchAll --coverage",
     "itest": "cypress open",
