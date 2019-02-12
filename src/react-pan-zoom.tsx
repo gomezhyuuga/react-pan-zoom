@@ -26,7 +26,7 @@ export interface IReactPanZoomProps {
   pandx?: number;
   pandy?: number;
   onPan?: (x: number, y: number) => void;
-  onRestart?: (dx: number, dy: number, zoom: number) => void;
+  onReset?: (dx: number, dy: number, zoom: number) => void;
 }
 export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps, IReactPanZoomStateType> {
   // In strict null checking setting default props doesn't seem to work. Hence the non-null assertion.
@@ -35,7 +35,7 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
   public static defaultProps: Partial<IReactPanZoomProps> = {
     enablePan: true,
     onPan: () => undefined,
-    onRestart: () => undefined,
+    onReset: () => undefined,
     pandx: 0,
     pandy: 0,
     zoom: 1,
@@ -132,13 +132,13 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
       }
     }
   };
-  private reset = () => {
+
+  public reset = () => {
     const matrixData = [1, 0, 0, 1, 0, 0];
-    this.setState({ matrixData }, () => {
-      if (this.props.onRestart) {
-        this.props.onRestart(0, 0, 1);
-      }
-    });
+    this.setState({ matrixData });
+    if (this.props.onReset) {
+      this.props.onReset(0, 0, 1);
+    }
   }
 
   public render() {

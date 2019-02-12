@@ -2,7 +2,6 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import ReactPanZoom from "../src/react-pan-zoom";
 import styled, { injectGlobal, css } from "styled-components";
-import IconSVG from "./components/IconSVG";
 import GlobalStyles from "./global-styles";
 
 /* tslint:disable:no-unused-expression */
@@ -10,15 +9,6 @@ injectGlobal`${GlobalStyles}`;
 /* tslint:enable:no-unused-expression */
 
 const HEADER_HEIGHT = 50;
-const Container = css`
-  height: calc(100vh - ${HEADER_HEIGHT}px);
-  width: 100vw;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-`;
 const ControlsContainer = styled.div`
   position: fixed;
   background: lightgray;
@@ -93,66 +83,54 @@ export default class ReactPanZoomDemo extends React.PureComponent {
       dy
     });
   };
-  private onReset = (dx, dy, zoom) => {
-    this.setState({dx, dy, zoom});
-  }
   private reset = () => {
-    this.panContainer.reset();
-  };
-  public createComponent = () => {
-    return (
-      <ReactPanZoom
-        className="mycl"
-        ref={ref => this.panContainer = ref}
-        enablePan={this.state.enablePan}
-        zoom={this.state.zoom}
-        pandx={this.state.dx}
-        pandy={this.state.dy}
-        onPan={this.onPan}
-        onReset={this.onReset}
-      >
-        <img src="https://i.imgur.com/WJ17gs5.jpg" />
-      </ReactPanZoom>
-    );
-  };
-  public styledComponent = () => {
-    const StyledReactPanZoom = styled(ReactPanZoom)`${Container}`;
-    return (
-      <StyledReactPanZoom
-        enablePan={this.state.enablePan}
-        zoom={this.state.zoom}
-        pandx={this.state.dx}
-        pandy={this.state.dy}
-        onPan={this.onPan}
-      >
-        <img src="https://i.imgur.com/WJ17gs5.jpg" />
-      </StyledReactPanZoom>
-    );
+    if (this.panContainer) {
+      this.panContainer.reset();
+    }
   };
 
   public renderPanZoomControls = () => {
     return (
       <ControlsContainer>
-        <div data-cypress-id="zoom-in-btn" onClick={this.zoomIn}>
-          <IconSVG name="icon-zoom-in" />
+        <div title="zoom in" data-cypress-id="zoom-in-btn" onClick={this.zoomIn}>
+          ➕
         </div>
-        <div data-cypress-id="zoom-out-btn" onClick={this.zoomOut}>
-          <IconSVG name="icon-zoom-out" />
+        <div title="zoom out" data-cypress-id="zoom-out-btn" onClick={this.zoomOut}>
+          ➖
         </div>
-        <div data-cypress-id="zoom-out-btn" onClick={this.reset}>
-          <IconSVG name="icon-zoom-out" />
-        </div>
+        <div title="Reset" onClick={this.reset}>🔄</div>
       </ControlsContainer>
     );
   };
 
   public render() {
-    return [
-      <Heading key="heading"> React Pan and Zoom </Heading>,
-      this.renderPanZoomControls(),
-      this.createComponent(),
-      // this.styledComponent(),
-    ];
+    return (
+      <>
+        <Heading key="heading"> React Pan and Zoom </Heading>
+        {this.renderPanZoomControls()}
+        <div
+          style={{
+            display: "flex",
+            width: "100vw",
+            height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+            overflow: "hidden",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <ReactPanZoom
+            ref={ref => (this.panContainer = ref)}
+            enablePan={this.state.enablePan}
+            zoom={this.state.zoom}
+            pandx={this.state.dx}
+            pandy={this.state.dy}
+            onPan={this.onPan}
+          >
+            <img src="https://i.imgur.com/WJ17gs5.jpg" />
+          </ReactPanZoom>
+        </div>
+      </>
+    );
   }
 }
 

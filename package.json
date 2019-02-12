@@ -1,19 +1,18 @@
 {
-  "name": "@ajainarayanan/react-pan-zoom",
-  "version": "0.0.3",
+  "name": "@gomezhyuuga/react-pan-zoom",
+  "version": "1.0.0",
   "description": "Simple wrapper for pan and zoom on html containers",
-  "main": "dist/react-pan-zoom",
   "typings": "dist/react-pan-zoom.d.ts",
-  "author": "ajainarayanan",
+  "author": "gomezhyuuga",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ajainarayanan/react-pan-zoom.git"
+    "url": "https://github.com/gomezhyuuga/react-pan-zoom.git"
   },
   "keywords": [
+    "react image pan zoom",
     "html pan",
-    "html zoom",
-    "react pan zoom"
+    "html zoom"
   ],
   "scripts": {
     "start:dev": "webpack-dev-server",
@@ -36,13 +35,14 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "styled-components": "^3.2.6",
-    "svg-sprite-loader": "^3.7.3",
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.3.0",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3",
     "webpack": "^4.8.3",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.4",
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "webpack-cli": "^3.2.3"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -64,9 +64,5 @@
     "coverageReporters": [
       "html"
     ]
-  },
-  "dependencies": {
-    "uglifyjs-webpack-plugin": "^2.1.1",
-    "webpack-cli": "^3.2.3"
   }
 }
