@@ -76,7 +76,14 @@ export default class ReactPanZoom extends React.PureComponent<
   private panContainer: any;
   public state = this.getInitialState();
 
-  private onMouseDown = (e: React.MouseEvent<EventTarget>) => {
+  private onMouseDown = (e: React.MouseEvent) => {
+    this.panStart(e.pageX, e.pageY, e);
+  };
+  private panStart = (
+    pageX: number,
+    pageY: number,
+    event: React.MouseEvent | React.TouchEvent
+  ) => {
     if (!this.props.enablePan) return;
 
     const { matrixData, dragData } = this.state;
@@ -85,8 +92,8 @@ export default class ReactPanZoom extends React.PureComponent<
     const newDragData: IDragData = {
       dx: offsetX,
       dy: offsetY,
-      x: e.pageX,
-      y: e.pageY,
+      x: pageX,
+      y: pageY,
     };
     this.setState({
       dragData: newDragData,
@@ -95,9 +102,9 @@ export default class ReactPanZoom extends React.PureComponent<
     if (this.panWrapper) {
       this.panWrapper.style.cursor = "move";
     }
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-    e.preventDefault();
+    event.stopPropagation();
+    event.nativeEvent.stopImmediatePropagation();
+    event.preventDefault();
   };
 
   public componentWillReceiveProps(nextProps: IReactPanZoomProps) {
@@ -114,6 +121,9 @@ export default class ReactPanZoom extends React.PureComponent<
   }
 
   private onMouseUp = (e: React.MouseEvent<EventTarget>) => {
+    this.panEnd(e);
+  };
+  private panEnd = (e: React.MouseEvent<EventTarget>) => {
     this.setState({
       comesFromDragging: this.state.dragging,
       dragging: false,
@@ -128,9 +138,12 @@ export default class ReactPanZoom extends React.PureComponent<
   };
 
   private onMouseMove = (e: React.MouseEvent<EventTarget>) => {
+    this.updateMousePosition(e.pageX, e.pageY);
+  };
+  private updateMousePosition = (pageX: number, pageY: number) => {
     if (!this.state.mouseDown) return;
 
-    const matrixData = this.getNewMatrixData(e.pageX, e.pageY);
+    const matrixData = this.getNewMatrixData(pageX, pageY);
     this.setState({
       dragging: true,
       matrixData,
@@ -162,12 +175,26 @@ export default class ReactPanZoom extends React.PureComponent<
     if (this.props.onClick) this.props.onClick(e);
   };
 
+  public onTouchStart = (e: React.TouchEvent) => {
+    const { pageX, pageY } = e.touches[0];
+    this.panStart(pageX, pageY, e);
+  };
+  public onTouchEnd = (e: any) => {
+    this.onMouseUp(e);
+  };
+  public onTouchMove = (e: React.TouchEvent) => {
+    this.updateMousePosition(e.touches[0].pageX, e.touches[0].pageY);
+  };
+
   public render() {
     return (
       <div
         className={`pan-container ${this.props.className || ""}`}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
+        onTouchStart={this.onTouchStart}
+        onTouchMove={this.onTouchMove}
+        onTouchEnd={this.onTouchEnd}
         onMouseMove={this.onMouseMove}
         onClick={this.onClick}
         style={{
