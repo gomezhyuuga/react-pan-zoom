@@ -8,7 +8,7 @@
     "member-ordering": false,
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "ordered-imports": false,
-    "rules": { "curly": [true, "ignore-same-line"] },
+    "curly": [true, "ignore-same-line"],
     "trailing-comma": [
       true,
       {

@@ -56,10 +56,10 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
       comesFromDragging: false,
       dragData: defaultDragData,
       dragging: false,
-      mouseDown: false,
       matrixData: [
         zoom!, 0, 0, zoom!, pandx!, pandy!, // [zoom, skew, skew, zoom, dx, dy]
       ],
+      mouseDown: false,
     };
   };
   // Used to set cursor while moving.
@@ -70,9 +70,8 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
 
   private onMouseDown = (e: React.MouseEvent<EventTarget>) => {
 
-    if (!this.props.enablePan) {
-      return;
-    }
+    if (!this.props.enablePan)  return;
+
     const { matrixData, dragData } = this.state;
     const offsetX = matrixData[4];
     const offsetY = matrixData[5];
@@ -109,9 +108,9 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
 
   private onMouseUp = (e: React.MouseEvent<EventTarget>) => {
     this.setState({
+      comesFromDragging: this.state.dragging,
       dragging: false,
       mouseDown: false,
-      comesFromDragging: this.state.dragging,
     });
     if (this.panWrapper) {
       this.panWrapper.style.cursor = "";
@@ -126,8 +125,8 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
 
     const matrixData = this.getNewMatrixData(e.pageX, e.pageY);
     this.setState({
-      matrixData,
       dragging: true,
+      matrixData,
     });
     if (this.panContainer) {
       this.panContainer.style.transform = `matrix(${this.state.matrixData.toString()})`;
