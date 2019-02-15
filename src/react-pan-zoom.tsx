@@ -1,4 +1,5 @@
 /*
+  FROK from ajainarayanan/react-pan-zoom
   Heavily inspired/lifted from this idea: https://stackoverflow.com/a/39311435/661768
   without jqueryUI or jquery dependency.
 */
@@ -13,6 +14,8 @@ export interface IDragData {
 
 export interface IReactPanZoomStateType {
   dragging: boolean;
+  mouseDown: boolean;
+  comesFromDragging: boolean;
   dragData: IDragData;
   matrixData: number[];
 }
@@ -27,6 +30,7 @@ export interface IReactPanZoomProps {
   pandy?: number;
   onPan?: (x: number, y: number) => void;
   onReset?: (dx: number, dy: number, zoom: number) => void;
+  onClick?: (e: React.MouseEvent) => void;
 }
 export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps, IReactPanZoomStateType> {
   // In strict null checking setting default props doesn't seem to work. Hence the non-null assertion.
@@ -49,8 +53,10 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
       y: 0,
     };
     return {
+      comesFromDragging: false,
       dragData: defaultDragData,
       dragging: false,
+      mouseDown: false,
       matrixData: [
         zoom!, 0, 0, zoom!, pandx!, pandy!, // [zoom, skew, skew, zoom, dx, dy]
       ],
@@ -63,6 +69,7 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
   public state = this.getInitialState();
 
   private onMouseDown = (e: React.MouseEvent<EventTarget>) => {
+
     if (!this.props.enablePan) {
       return;
     }
@@ -77,7 +84,7 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
     };
     this.setState({
       dragData: newDragData,
-      dragging: true,
+      mouseDown: true,
     });
     if (this.panWrapper) {
       this.panWrapper.style.cursor = "move";
@@ -100,15 +107,30 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
     }
   }
 
-  private onMouseUp = () => {
+  private onMouseUp = (e: React.MouseEvent<EventTarget>) => {
     this.setState({
       dragging: false,
+      mouseDown: false,
+      comesFromDragging: this.state.dragging,
     });
     if (this.panWrapper) {
       this.panWrapper.style.cursor = "";
     }
     if (this.props.onPan) {
       this.props.onPan(this.state.matrixData[4], this.state.matrixData[5]);
+    }
+  };
+
+  private onMouseMove = (e: React.MouseEvent<EventTarget>) => {
+    if (!this.state.mouseDown) return;
+
+    const matrixData = this.getNewMatrixData(e.pageX, e.pageY);
+    this.setState({
+      matrixData,
+      dragging: true,
+    });
+    if (this.panContainer) {
+      this.panContainer.style.transform = `matrix(${this.state.matrixData.toString()})`;
     }
   };
 
@@ -120,25 +142,18 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
     matrixData[5] = dragData.dy - deltaY;
     return matrixData;
   };
-
-  private onMouseMove = (e: React.MouseEvent<EventTarget>) => {
-    if (this.state.dragging) {
-      const matrixData = this.getNewMatrixData(e.pageX, e.pageY);
-      this.setState({
-        matrixData,
-      });
-      if (this.panContainer) {
-        this.panContainer.style.transform = `matrix(${this.state.matrixData.toString()})`;
-      }
-    }
-  };
-
   public reset = () => {
     const matrixData = [1, 0, 0, 1, 0, 0];
     this.setState({ matrixData });
     if (this.props.onReset) {
       this.props.onReset(0, 0, 1);
     }
+  }
+
+  public onClick = (e: React.MouseEvent) => {
+    if (this.state.comesFromDragging) return;
+
+    if (this.props.onClick) this.props.onClick(e);
   }
 
   public render() {
@@ -148,6 +163,7 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
+        onClick={this.onClick}
         style={{
           height: this.props.height,
           userSelect: "none",

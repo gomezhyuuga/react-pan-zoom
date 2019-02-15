@@ -126,7 +126,7 @@ export default class ReactPanZoomDemo extends React.PureComponent {
             pandy={this.state.dy}
             onPan={this.onPan}
           >
-            <img src="https://i.imgur.com/WJ17gs5.jpg" />
+            <img src="https://images.pexels.com/photos/1851471/pexels-photo-1851471.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=150" />
           </ReactPanZoom>
         </div>
       </>
