@@ -32,7 +32,10 @@ export interface IReactPanZoomProps {
   onReset?: (dx: number, dy: number, zoom: number) => void;
   onClick?: (e: React.MouseEvent) => void;
 }
-export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps, IReactPanZoomStateType> {
+export default class ReactPanZoom extends React.PureComponent<
+  IReactPanZoomProps,
+  IReactPanZoomStateType
+> {
   // In strict null checking setting default props doesn't seem to work. Hence the non-null assertion.
   // :crossedfingers: it shouldn't be deprecated. Or the very least support defaultProps semantics as proposed
   // in this PR: https://github.com/Microsoft/TypeScript/issues/23812
@@ -57,7 +60,12 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
       dragData: defaultDragData,
       dragging: false,
       matrixData: [
-        zoom!, 0, 0, zoom!, pandx!, pandy!, // [zoom, skew, skew, zoom, dx, dy]
+        zoom!,
+        0,
+        0,
+        zoom!,
+        pandx!,
+        pandy!, // [zoom, skew, skew, zoom, dx, dy]
       ],
       mouseDown: false,
     };
@@ -69,8 +77,7 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
   public state = this.getInitialState();
 
   private onMouseDown = (e: React.MouseEvent<EventTarget>) => {
-
-    if (!this.props.enablePan)  return;
+    if (!this.props.enablePan) return;
 
     const { matrixData, dragData } = this.state;
     const offsetX = matrixData[4];
@@ -147,13 +154,13 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
     if (this.props.onReset) {
       this.props.onReset(0, 0, 1);
     }
-  }
+  };
 
   public onClick = (e: React.MouseEvent) => {
     if (this.state.comesFromDragging) return;
 
     if (this.props.onClick) this.props.onClick(e);
-  }
+  };
 
   public render() {
     return (
@@ -168,10 +175,10 @@ export default class ReactPanZoom extends React.PureComponent<IReactPanZoomProps
           userSelect: "none",
           width: this.props.width,
         }}
-        ref={(ref) => this.panWrapper = ref}
+        ref={ref => (this.panWrapper = ref)}
       >
         <div
-          ref={(ref) => ref ? this.panContainer = ref : null}
+          ref={ref => (ref ? (this.panContainer = ref) : null)}
           style={{
             transform: `matrix(${this.state.matrixData.toString()})`,
           }}
